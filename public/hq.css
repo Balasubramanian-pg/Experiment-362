@@ -2707,3 +2707,236 @@ body, input, button, textarea, select {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
+
+/* ========================================================
+   EMAI HQ UX Enhancement & Bug Removal Layer (UX-01 to UX-22)
+   ======================================================== */
+
+/* UX-01: View Transitions API styling */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.25s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* UX-02: Physics-based spring easing for modals, drawers, and overlays */
+.assistant-surface,
+.jump-palette-content,
+.demo-guide-card,
+.decision-overlay,
+.control-dock {
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* UX-03: Active button click tactile feedback */
+button:active,
+.action:active,
+.pill:active,
+[role="button"]:active {
+  transform: scale(0.97) !important;
+  transition: transform 0.08s ease !important;
+}
+
+/* UX-04: Smooth glowing focus rings and border transitions for form inputs */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none !important;
+  border-color: #80cfc6 !important;
+  box-shadow: 0 0 0 3px rgba(128, 207, 198, 0.25) !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+/* UX-06: Animated pulsing thinking dots */
+.assistant-thinking-dots {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  padding: 8px 12px;
+}
+.assistant-thinking-dots span {
+  width: 6px;
+  height: 6px;
+  background: #80cfc6;
+  border-radius: 50%;
+  animation: dot-pulse 1.2s infinite ease-in-out both;
+}
+.assistant-thinking-dots span:nth-child(1) { animation-delay: -0.32s; }
+.assistant-thinking-dots span:nth-child(2) { animation-delay: -0.16s; }
+@keyframes dot-pulse {
+  0%, 80%, 100% { transform: scale(0); opacity: 0.4; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+/* UX-08: Custom sleek translucent scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+}
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.32);
+}
+
+/* UX-09: Floating toast notification container */
+.hq-toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+.hq-toast {
+  background: rgba(24, 28, 36, 0.95);
+  border: 1px solid rgba(128, 207, 198, 0.35);
+  color: #efefef;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(12px);
+  transform: translateY(12px);
+  opacity: 0;
+  animation: toast-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  pointer-events: auto;
+}
+@keyframes toast-in {
+  to { transform: translateY(0); opacity: 1; }
+}
+.hq-toast.dismissing {
+  animation: toast-out 0.25s ease forwards;
+}
+@keyframes toast-out {
+  to { transform: translateY(10px); opacity: 0; }
+}
+
+/* UX-10: Task completion animation */
+.task-completed-anim {
+  text-decoration: line-through;
+  opacity: 0.65;
+  transition: opacity 0.3s ease, text-decoration 0.2s ease;
+}
+
+/* UX-11: Smooth theme cross-fade transition on background */
+#app-background-image {
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-image 0.4s ease;
+}
+
+/* UX-12: Card hover micro-elevation & shimmer */
+.feed-item,
+.metric-card,
+.crm-activity-item,
+.project-card {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease !important;
+}
+.feed-item:hover,
+.metric-card:hover,
+.project-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  border-color: rgba(128, 207, 198, 0.4) !important;
+}
+
+/* UX-13: Jump Palette active item focus */
+.jump-palette-item:focus-visible,
+.jump-palette-item.active {
+  background: rgba(128, 207, 198, 0.15) !important;
+  border-left: 3px solid #80cfc6;
+}
+
+/* UX-14: Contextual micro-tooltips */
+[data-tooltip] {
+  position: relative;
+}
+[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 110%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 18, 24, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  white-space: nowrap;
+  color: #efefef;
+  pointer-events: none;
+  z-index: 10000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  animation: tooltip-fade 0.2s ease forwards;
+}
+@keyframes tooltip-fade {
+  from { opacity: 0; transform: translate(-50%, 4px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* UX-15: Overscroll behavior containment */
+.assistant-surface,
+.demo-guide-card,
+.jump-palette-content,
+.decision-overlay {
+  overscroll-behavior: contain;
+}
+
+/* UX-17: Theme-consistent selection highlight */
+::selection {
+  background: rgba(128, 207, 198, 0.35);
+  color: #ffffff;
+}
+
+/* UX-18: Form input validation shake animation */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}
+.input-invalid {
+  border-color: #ff6b6b !important;
+  animation: shake 0.35s ease;
+}
+
+/* UX-19: Animated radar pulse ripple for telemetry */
+.pulse-radar-dot {
+  position: relative;
+}
+.pulse-radar-dot::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: 50%;
+  border: 1.5px solid #80cfc6;
+  animation: radar-ripple 2s infinite ease-out;
+}
+@keyframes radar-ripple {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(2.6); opacity: 0; }
+}
+
+/* UX-20: Mobile minimum 44px tap targets */
+@media (max-width: 768px) {
+  button, a, .action, .pill, input, select {
+    min-height: 44px;
+  }
+}
+
+/* UX-22: Intrinsic container aspect ratios */
+.background-image {
+  aspect-ratio: 16 / 9;
+}

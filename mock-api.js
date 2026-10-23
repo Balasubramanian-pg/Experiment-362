@@ -105,6 +105,54 @@
     return el;
   };
 
+
+  // ========================================================
+  // EMAI HQ Runtime UX Enhancements (UX-01, 05, 07, 09, 21)
+  // ========================================================
+
+  // UX-01: Seamless View Transitions API on hash navigation
+  window.addEventListener('hashchange', () => {
+    if (document.startViewTransition) {
+      try { document.startViewTransition(); } catch(e) {}
+    }
+  });
+
+  // UX-09: Lightweight floating toast notification system
+  window.showHqToast = function(msg) {
+    let container = document.querySelector('.hq-toast-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.className = 'hq-toast-container';
+      document.body.appendChild(container);
+    }
+    const toast = document.createElement('div');
+    toast.className = 'hq-toast';
+    toast.textContent = msg;
+    container.appendChild(toast);
+    setTimeout(() => {
+      toast.classList.add('dismissing');
+      setTimeout(() => toast.remove(), 250);
+    }, 3000);
+  };
+
+  // UX-07 & UX-21: Global Escape key listener & backdrop dismiss
+  window.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      const overlays = document.querySelectorAll('.demo-guide-backdrop, .jump-palette-backdrop');
+      overlays.forEach(function(el) {
+        el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
+      });
+    }
+  });
+
+  // UX-05: Auto-scroll assistant timeline helper
+  window.addEventListener('hq:open-assistant', function() {
+    setTimeout(function() {
+      const surface = document.querySelector('.assistant-surface');
+      if (surface) surface.scrollTop = surface.scrollHeight;
+    }, 100);
+  });
+
   // Intercept window.fetch
   const origFetch = window.fetch.bind(window);
   window.fetch = async function(input, init = {}) {
@@ -259,14 +307,21 @@
         }
 
         // 11. Today, Captures, Decisions, Followups
-        if (pathname === '/api/today') return jsonRes({ ok: true, day: body.day, key: body.key });
+        if (pathname === '/api/today') {
+          try { window.showHqToast('✔ Plan item updated'); } catch(e) {}
+          return jsonRes({ ok: true, day: body.day, key: body.key });
+        }
         if (pathname === '/api/capture') {
+          try { window.showHqToast('✨ Note captured to workspace'); } catch(e) {}
           const cap = { id: 'capture:' + crypto.randomUUID(), title: body.title, text: body.text, createdAt: new Date().toISOString() };
           state.operations.captures = state.operations.captures || [];
           state.operations.captures.unshift(cap);
           return jsonRes(cap);
         }
-        if (pathname === '/api/decision') return jsonRes({ ok: true, id: body.id, outcome: body.outcome });
+        if (pathname === '/api/decision') {
+          try { window.showHqToast('📋 Decision recorded in HQ'); } catch(e) {}
+          return jsonRes({ ok: true, id: body.id, outcome: body.outcome });
+        }
         if (pathname === '/api/followup') return jsonRes({ ok: true });
         if (pathname === '/api/delegate' || pathname === '/api/delegation/retry' || pathname === '/api/delegation/review') {
           return jsonRes({ ok: true, id: body.id || crypto.randomUUID(), status: 'completed' });

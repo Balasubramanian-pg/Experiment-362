@@ -5,6 +5,7 @@ A pixel-perfect, fully functional recreation of **[EMAI HQ](https://hq.easymachi
 - **🌐 Live Production URL**: **[https://balasubramanian-pg.github.io/Experiment-362/#hq](https://balasubramanian-pg.github.io/Experiment-362/#hq)**
 - **📋 GitHub Project Board**: **[EMAI HQ - Performance Optimization Roadmap (Project #5)](https://github.com/users/Balasubramanian-pg/projects/5)**
 - **⚡ Performance Improvements**: **[PERFORMANCE.md](PERFORMANCE.md)** (17 Core Web Vitals & Runtime Optimizations)
+- **🎨 UX Enhancements & Bug Fixes**: **[UX_TICKETS.md](UX_TICKETS.md)** (22 UX Polish & Bug Removal Tickets)
 
 ---
 
