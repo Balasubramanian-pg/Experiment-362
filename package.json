@@ -1,6 +1,23 @@
 {
-  "status": "initialized",
-  "meta": {
-    "file": "package.json"
-  }
+  "name": "emai-hq",
+  "version": "1.0.0",
+  "description": "Recreation of EMAI HQ (https://hq.easymachineai.com/#hq) - Personal AI Operating System and Workflow Management Hub",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node test.js"
+  },
+  "keywords": [
+    "emai",
+    "hq",
+    "easymachineai",
+    "operations",
+    "crm",
+    "personal-os",
+    "react"
+  ],
+  "author": "",
+  "license": "ISC"
 }
