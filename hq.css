@@ -1882,7 +1882,7 @@ html[data-hq-motion=full] .pj-project-row:hover{transform:translateX(3px)}
 
 /* 2. Record header tint */
 .pj-reworked .pj-project-bar{position:relative;isolation:isolate;padding:14px 16px;border:1px solid var(--shell-line);border-radius:14px;background:linear-gradient(135deg,color-mix(in srgb,var(--page-accent,#d6aaa3) 16%,transparent),transparent 65%),var(--shell-panel)}
-.pj-reworked .pj-project-bar::before{content:'';position:absolute;inset:0;z-index:-1;border-radius:inherit;background:url(/theme-1/projects.webp) center/cover;opacity:.14;filter:saturate(.7);-webkit-mask:linear-gradient(90deg,#000,transparent 70%);mask:linear-gradient(90deg,#000,transparent 70%)}
+.pj-reworked .pj-project-bar::before{content:'';position:absolute;inset:0;z-index:-1;border-radius:inherit;background:url(./theme-1/projects.webp) center/cover;opacity:.14;filter:saturate(.7);-webkit-mask:linear-gradient(90deg,#000,transparent 70%);mask:linear-gradient(90deg,#000,transparent 70%)}
 .pj-identity h2{padding-left:10px;box-shadow:inset 3px 0 0 var(--page-accent,#d6aaa3)}
 
 /* 3. Back pill */
