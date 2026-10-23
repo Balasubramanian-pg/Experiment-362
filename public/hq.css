@@ -2662,3 +2662,48 @@ html[data-hq-canvas-theme=light][data-hq-canvas-theme] .action.primary:not(:disa
 html[data-hq-canvas-theme=light][data-hq-canvas-theme] .mv-overlay-values span{color:var(--light-ink)!important}
 html[data-hq-canvas-theme=light][data-hq-canvas-theme] :is(.mv-action-label span,.mv-calendar-ends span,.mv-chart-footer span,.content-inspector header span){color:var(--light-muted)!important}
 html[data-hq-canvas-theme=light][data-hq-canvas-theme] .evidence-card-image span{color:#fff!important}
+
+/* ========================================================
+   EMAI HQ Performance Optimization Layer (Fixes 06, 07, 14, 16)
+   ======================================================== */
+
+/* Fix 06: Content-visibility optimization for offscreen views */
+.workspace-page,
+.content-director,
+.attention-page,
+.crm-workbench,
+.delegation-workbench,
+.metrics-view,
+.demo-guide-card {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 600px;
+}
+
+/* Fix 07: Hardware-accelerated GPU layer promotion for drawers & overlays */
+#app-background-image,
+.assistant-surface,
+.jump-palette-backdrop,
+.demo-guide-backdrop,
+.decision-overlay,
+.control-dock {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Fix 14: Reduced-motion fast-path optimization */
+[data-hq-motion="calm"] *,
+[data-hq-motion="calm"] *::before,
+[data-hq-motion="calm"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Fix 16: Robust font fallback metric alignment to prevent CLS */
+body, input, button, textarea, select {
+  font-family: 'Rubik', 'Work Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}

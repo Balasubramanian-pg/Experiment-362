@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import url from 'node:url';
 import crypto from 'node:crypto';
+import zlib from 'node:zlib';
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 3000;
@@ -27,6 +28,28 @@ const MIME_TYPES = {
   '.ttf': 'font/ttf',
   '.pdf': 'application/pdf',
 };
+
+
+// Fix 05: Static asset memory cache
+const staticFileCache = new Map();
+
+function getCachedFile(filePath) {
+  const stat = fs.statSync(filePath);
+  const cacheKey = `${filePath}:${stat.mtimeMs}`;
+  if (staticFileCache.has(cacheKey)) {
+    return staticFileCache.get(cacheKey);
+  }
+  const buffer = fs.readFileSync(filePath);
+  // Fix 04: ETag generation
+  const etag = `"${crypto.createHash('md5').update(buffer).digest('hex')}"`;
+  // Fix 03: Dynamic Gzip compression
+  const ext = path.extname(filePath).toLowerCase();
+  const isCompressible = ['.html', '.css', '.js', '.json', '.svg'].includes(ext);
+  const gzipped = isCompressible ? zlib.gzipSync(buffer) : null;
+  const entry = { buffer, gzipped, etag, mtime: stat.mtime, size: stat.size };
+  staticFileCache.set(cacheKey, entry);
+  return entry;
+}
 
 // In-memory application state
 let state = {};
@@ -594,20 +617,47 @@ const server = http.createServer(async (req, res) => {
   if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
     const ext = path.extname(filePath).toLowerCase();
     const contentType = MIME_TYPES[ext] || 'application/octet-stream';
+    const cached = getCachedFile(filePath);
 
-    // Stream the file
+    // Fix 04: 304 Not Modified ETag verification
+    const ifNoneMatch = req.headers['if-none-match'];
+    if (ifNoneMatch && ifNoneMatch === cached.etag) {
+      res.writeHead(304, {
+        'ETag': cached.etag,
+        'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=31536000, immutable'
+      });
+      return res.end();
+    }
+
+    // Fix 03: Gzip compression
+    const acceptEncoding = req.headers['accept-encoding'] || '';
+    if (cached.gzipped && acceptEncoding.includes('gzip')) {
+      res.writeHead(200, {
+        'Content-Type': contentType,
+        'Content-Encoding': 'gzip',
+        'ETag': cached.etag,
+        'Vary': 'Accept-Encoding',
+        'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=31536000, immutable'
+      });
+      return res.end(cached.gzipped);
+    }
+
+    // Uncompressed fallback
     res.writeHead(200, {
       'Content-Type': contentType,
+      'Content-Length': cached.buffer.length,
+      'ETag': cached.etag,
       'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=31536000, immutable'
     });
-    return fs.createReadStream(filePath).pipe(res);
+    return res.end(cached.buffer);
   }
 
   // Fallback to index.html for SPA hash routing
-  const fallbackIndex = path.join(PUBLIC_DIR, 'index.html');
+  const fallbackIndex = path.join(__dirname, 'index.html');
   if (fs.existsSync(fallbackIndex)) {
-    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-    return fs.createReadStream(fallbackIndex).pipe(res);
+    const cachedIndex = getCachedFile(fallbackIndex);
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'ETag': cachedIndex.etag });
+    return res.end(cachedIndex.buffer);
   }
 
   res.writeHead(404, { 'Content-Type': 'text/plain' });

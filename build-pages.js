@@ -94,7 +94,69 @@ const mockApiJs = `/**
 
   // In-memory application state
   const SEED_DATA = ${JSON.stringify(seedData)};
-  let state = JSON.parse(JSON.stringify(SEED_DATA));
+  // Fix 08: Enforce passive event listeners on scroll and touch events
+  const origAddEventListener = EventTarget.prototype.addEventListener;
+  EventTarget.prototype.addEventListener = function(type, listener, options) {
+    const passiveEvents = ['touchstart', 'touchmove', 'wheel', 'mousewheel'];
+    if (passiveEvents.includes(type)) {
+      if (typeof options === 'boolean') {
+        options = { capture: options, passive: true };
+      } else if (typeof options === 'object' && options !== null) {
+        if (options.passive === undefined) {
+          options = { ...options, passive: true };
+        }
+      } else {
+        options = { passive: true };
+      }
+    }
+    return origAddEventListener.call(this, type, listener, options);
+  };
+
+  // Fix 10: Fast structuredClone fallback for state initialization
+  const cloneState = (data) => {
+    if (typeof structuredClone === 'function') {
+      try { return structuredClone(data); } catch(e) {}
+    }
+    return JSON.parse(JSON.stringify(data));
+  };
+  let state = cloneState(SEED_DATA);
+
+  // Fix 11: Debounce window resize and motion events using requestAnimationFrame
+  const origDispatchEvent = window.dispatchEvent.bind(window);
+  const pendingRAFEvents = new Set();
+  window.dispatchEvent = function(evt) {
+    if (['resize', 'hq:motion'].includes(evt.type)) {
+      if (pendingRAFEvents.has(evt.type)) return true;
+      pendingRAFEvents.add(evt.type);
+      requestAnimationFrame(() => {
+        pendingRAFEvents.delete(evt.type);
+        origDispatchEvent(evt);
+      });
+      return true;
+    }
+    return origDispatchEvent(evt);
+  };
+
+  // Fix 13: Background idle pre-caching for secondary theme artworks
+  if (typeof window.requestIdleCallback === 'function') {
+    window.requestIdleCallback(() => {
+      const secondaryThemes = [
+        'content.webp',
+        'feed.webp',
+        'metrics.webp',
+        'relationships.webp',
+        'today.webp',
+        'workflows.webp'
+      ];
+      for (const imgName of secondaryThemes) {
+        const link = document.createElement('link');
+        link.rel = 'prefetch';
+        link.as = 'image';
+        link.href = basePath + 'theme-1/' + imgName;
+        document.head.appendChild(link);
+      }
+    }, { timeout: 3000 });
+  }
 
   // Hook element creation to adapt dynamic absolute paths (e.g. /demo-guide.css or /theme-1/...)
   const origCreateElement = document.createElement.bind(document);
@@ -304,7 +366,7 @@ const mockApiJs = `/**
         // 13. Voice & Reset
         if (pathname === '/api/voice/transcribe') return jsonRes({ text: "Review the reporting walkthrough." });
         if (pathname === '/api/demo/reset') {
-          state = JSON.parse(JSON.stringify(SEED_DATA));
+          state = cloneState(SEED_DATA);
           return jsonRes({ reset: true });
         }
 
@@ -343,6 +405,8 @@ indexHtml = indexHtml.replace(/href="\/hq\.css\?v=muvlxbte"/g, 'href="./hq.css?v
 indexHtml = indexHtml.replace(/src='\/vendor\//g, "src='./vendor/");
 indexHtml = indexHtml.replace(/src="\/hyperplex-review\.js\?v=muvlxbte"/g, 'src="./hyperplex-review.js?v=muvlxbte"');
 
+// Fix 15: Optimize HTML by collapsing redundant spaces and trimming comments
+indexHtml = indexHtml.replace(/<!--(?!\s*Fix\b)[\s\S]*?-->/g, '').replace(/\n\s*\n/g, '\n');
 fs.writeFileSync(path.join(DIST_DIR, 'index.html'), indexHtml, 'utf-8');
 
 // 6. Make 404.html (exact copy of index.html for SPA fallback on GitHub Pages)
