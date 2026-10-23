@@ -1,2 +1,1 @@
-{
-}
+{"suggestions":[{"kind":"review","rank":1,"date":"2026-10-23","id":"invoice:invoice:northstar-02:1","relationshipId":"rel:maya","lane":"billing","glyph":"save","invoice":{"title":"Northstar Launch · Milestone 2","currency":"CAD","outstandingMinor":240000,"due":"2026-10-28","sourceChanged":false},"label":"Review invoice balance","actionTitle":"Review payment evidence: Northstar Launch · Milestone 2","type":"payment-check","evidenceId":"invoice:northstar-02","evidenceAt":"2026-10-09T16:00:00.000Z","evidenceDate":"2026-10-09","reason":"CAD 2400.00 remaining in the local ledger · due 2026-10-28. No payment record yet, which is not proof it is unpaid."}],"errors":[],"sendingEnabled":false}
