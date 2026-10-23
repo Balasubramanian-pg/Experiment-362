@@ -52,6 +52,15 @@ A pixel-perfect, fully functional recreation of **[EMAI HQ](https://hq.easymachi
 
 ---
 
+## 🌐 Live GitHub Pages Demo
+
+This project is automatically deployed to GitHub Pages via GitHub Actions:
+- **Live URL**: **[https://balasubramanian-pg.github.io/Experiment-362/#hq](https://balasubramanian-pg.github.io/Experiment-362/#hq)**
+
+The static build embeds a client-side mock runtime (`mock-api.js`) that intercepts all REST APIs and manages state in-browser, making the entire website 100% functional on GitHub Pages with zero server setup!
+
+---
+
 ## 🚀 Quick Start
 
 This project is built to run **with zero external dependencies** using native Node.js.
