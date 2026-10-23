@@ -362,3 +362,16 @@ hqCss = hqCss.replace(/url\(\/theme-1\//g, 'url(./theme-1/');
 fs.writeFileSync(path.join(DIST_DIR, 'hq.css'), hqCss, 'utf-8');
 
 console.log('GitHub Pages build complete in ./dist directory!');
+
+// Copy compiled static files directly to repository root for root deployment
+for (const item of fs.readdirSync(DIST_DIR)) {
+  const src = path.join(DIST_DIR, item);
+  const dst = path.join(ROOT_DIR, item);
+  if (fs.statSync(src).isDirectory()) {
+    copyDirSync(src, dst);
+  } else {
+    fs.copyFileSync(src, dst);
+  }
+}
+console.log('Copied distribution files to repository root for root deployment!');
+

@@ -576,7 +576,10 @@ const server = http.createServer(async (req, res) => {
   }
 
   // ================= STATIC ASSET SERVING =================
-  let filePath = path.join(PUBLIC_DIR, pathname === '/' ? 'index.html' : pathname);
+  let filePath = path.join(__dirname, pathname === '/' ? 'index.html' : pathname);
+  if (!fs.existsSync(filePath)) {
+    filePath = path.join(PUBLIC_DIR, pathname === '/' ? 'index.html' : pathname);
+  }
 
   // If path has no extension and index.html exists in that directory
   if (!path.extname(filePath)) {
