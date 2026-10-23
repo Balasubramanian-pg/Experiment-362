@@ -1,2 +1,1 @@
-{
-}
+{"available":true,"runtimes":[{"id":"pi","name":"Demo runner","available":true,"capabilities":{"models":true,"thinkingLevels":["low","medium","high"],"tools":false},"auth":[{"provider":"demo","configured":true}],"setup":{"oauth":"In your own HQ you sign in to the provider you choose. The demo makes no model calls.","apiKey":"HQ never collects or stores API keys.","changesCredentials":false}}],"models":[{"provider":"demo","id":"demo-model","label":"Demo model · no calls are made","thinkingLevels":["low","medium","high"]}],"auth":[{"provider":"demo","configured":true}],"preferences":{"runner":"pi","model":"demo/demo-model","thinking":"medium"},"connectionStatus":"Demo runner connected. Every run returns a scripted receipt; no model is called."}
